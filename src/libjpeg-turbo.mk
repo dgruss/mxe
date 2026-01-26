@@ -24,7 +24,9 @@ define $(PKG)_BUILD
         -DWITH_JPEG8=ON \
         -DBUILD=reproducible \
         -DCMAKE_INSTALL_PREFIX='$(PREFIX)/$(TARGET)' \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_ASM_NASM_FLAGS='-g null' \
+        -DCMAKE_ASM_NASM_FLAGS_RELEASE='-g null' \
         -DCMAKE_ASM_NASM_COMPILER=$(TARGET)-yasm
     $(MAKE) -C '$(BUILD_DIR)' -j '$(JOBS)'
     $(MAKE) -C '$(BUILD_DIR)' -j 1 install

@@ -1,0 +1,21 @@
+This file is part of MXE. See LICENSE.md for licensing information.
+
+Contains ad hoc patches for cross building.
+
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MXE <mxe@example.invalid>
+Date: Wed, 28 Jan 2026 00:00:00 +0000
+Subject: [PATCH] Skip NativePresets subdir on Windows
+
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 26ceca6..b4c57b7 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -161,2 +161,2 @@
+-DIST_SUBDIRS = libprojectM NativePresets projectM-sdl projectM-qt \
++DIST_SUBDIRS = libprojectM projectM-sdl projectM-qt \
+ 	projectM-pulseaudio
+@@ -331,1 +331,1 @@
+-SUBDIRS = libprojectM NativePresets ${PROJECTM_SDL_SUBDIR} ${PROJECTM_QT_SUBDIR}
++SUBDIRS = libprojectM ${PROJECTM_SDL_SUBDIR} ${PROJECTM_QT_SUBDIR}
