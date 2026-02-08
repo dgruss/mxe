@@ -17,6 +17,7 @@ define $(PKG)_UPDATE
 endef
 
 define $(PKG)_BUILD
+    find '$(1)' -type f -exec touch -c {} +
     cd '$(1)' && ./autogen.sh
     cd '$(1)' && ./configure \
         $(MXE_CONFIGURE_OPTS) \

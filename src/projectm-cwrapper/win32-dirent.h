@@ -1,0 +1,6 @@
+#ifndef PROJECTM_CWRAPPER_WIN32_DIRENT_H
+#define PROJECTM_CWRAPPER_WIN32_DIRENT_H
+
+#include <dirent.h>
+
+#endif

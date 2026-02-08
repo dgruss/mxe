@@ -7,16 +7,18 @@ $(PKG)_IGNORE   :=
 $(PKG)_VERSION  := 4.6.0
 $(PKG)_CHECKSUM := 1ec1cba65f9f20fe5a41fda1586e01c70ea0c9a6d7b67c9e13edf0cfe2239277
 $(PKG)_GH_CONF  := opencv/opencv/releases
-$(PKG)_DEPS     := cc eigen ffmpeg jasper jpeg libpng libwebp \
+$(PKG)_DEPS     := cc eigen jasper jpeg libpng libwebp \
                    openblas openexr protobuf tiff xz zlib
 
 # -DCMAKE_CXX_STANDARD=98 required for non-posix gcc7 build
 
 define $(PKG)_BUILD
+  $(PYTHON3) '$(TOP_DIR)/tools/opencv_ffmpeg_compat.py' '$(SOURCE_DIR)'
     # build
     cd '$(BUILD_DIR)' && '$(TARGET)-cmake' '$(SOURCE_DIR)' \
       -DWITH_QT=OFF \
       -DWITH_OPENGL=ON \
+  -DWITH_FFMPEG=OFF \
       -DWITH_GSTREAMER=OFF \
       -DWITH_GTK=OFF \
       -DWITH_VIDEOINPUT=ON \
@@ -48,8 +50,8 @@ define $(PKG)_BUILD
 
     $(INSTALL) -m755 '$(BUILD_DIR)/unix-install/opencv4.pc' '$(PREFIX)/$(TARGET)/lib/pkgconfig'
 
-    '$(TARGET)-g++' \
-        -W -Wall -Werror -ansi -std=c++11 \
-        '$(SOURCE_DIR)/samples/cpp/fback.cpp' -o '$(PREFIX)/$(TARGET)/bin/test-opencv.exe' \
-        `'$(TARGET)-pkg-config' opencv4 libavcodec libavformat libswscale --cflags --libs` -lwebp
+  '$(TARGET)-g++' \
+    -W -Wall -Werror -ansi -std=c++11 \
+    '$(SOURCE_DIR)/samples/cpp/fback.cpp' -o '$(PREFIX)/$(TARGET)/bin/test-opencv.exe' \
+    `'$(TARGET)-pkg-config' opencv4 --cflags --libs`
 endef
