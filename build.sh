@@ -12,6 +12,27 @@ export SOURCE_DATE_EPOCH=0
 # Prefer system tools over a possibly broken venv shim (e.g., mako-render).
 # Ensure user's Python scripts directory is in PATH for mako-render
 export PATH="$HOME/.local/bin:/usr/bin:$PATH"
+# Replace local wrapper sources with USDX versions before building.
+USDX_RAW_BASE="https://github.com/UltraStar-Deluxe/USDX/raw/refs/heads/master"
+fetch_wrapper() {
+	url="$1"
+	out="$2"
+	if command -v curl >/dev/null 2>&1; then
+		curl -fsSL "$url" -o "$out"
+		return $?
+	fi
+	if command -v wget >/dev/null 2>&1; then
+		wget -qO "$out" "$url"
+		return $?
+	fi
+	echo "Missing curl/wget to fetch USDX wrappers" >&2
+	return 1
+}
+mkdir -p src/opencvwrapper src/projectm-cwrapper
+fetch_wrapper "$USDX_RAW_BASE/src/lib/openCV3/ApiWrapper.cpp" \
+	"src/opencvwrapper/opencv-wrapper.cpp"
+fetch_wrapper "$USDX_RAW_BASE/src/lib/projectM/cwrapper/projectM-cwrapper.h" \
+	"src/projectm-cwrapper/projectM-cwrapper.h"
 # Force DWARF debug info and assume .loc support to avoid stabs on x86_64.
 make -j 24 JOBS=24 MXE_TARGETS=$TARGET \
 	CFLAGS_FOR_TARGET='-O2 -gdwarf-2 -gas-loc-support' \

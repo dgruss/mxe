@@ -7,7 +7,6 @@ From: MXE <mxe@example.invalid>
 Date: Wed, 28 Jan 2026 00:00:00 +0000
 Subject: [PATCH] Skip NativePresets subdir on Windows
 
-
 diff --git a/src/Makefile.in b/src/Makefile.in
 index 26ceca6..b4c57b7 100644
 --- a/src/Makefile.in
