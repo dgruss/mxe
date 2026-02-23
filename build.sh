@@ -13,7 +13,7 @@ export SOURCE_DATE_EPOCH=0
 # Ensure user's Python scripts directory is in PATH for mako-render
 export PATH="$HOME/.local/bin:/usr/bin:$PATH"
 # Replace local wrapper sources with USDX versions before building.
-USDX_RAW_BASE="https://github.com/UltraStar-Deluxe/USDX/raw/refs/heads/master"
+USDX_RAW_BASE="https://raw.githubusercontent.com/dgruss/USDX/refs/heads/x64"
 fetch_wrapper() {
 	url="$1"
 	out="$2"
@@ -31,13 +31,15 @@ fetch_wrapper() {
 mkdir -p src/opencvwrapper src/projectm-cwrapper
 fetch_wrapper "$USDX_RAW_BASE/src/lib/openCV3/ApiWrapper.cpp" \
 	"src/opencvwrapper/opencv-wrapper.cpp"
+fetch_wrapper "$USDX_RAW_BASE/src/lib/projectM/cwrapper/projectM-cwrapper.cpp" \
+	"src/projectm-cwrapper/projectM-cwrapper.cpp"
 fetch_wrapper "$USDX_RAW_BASE/src/lib/projectM/cwrapper/projectM-cwrapper.h" \
 	"src/projectm-cwrapper/projectM-cwrapper.h"
 # Force DWARF debug info and assume .loc support to avoid stabs on x86_64.
 make -j 24 JOBS=24 MXE_TARGETS=$TARGET \
 	CFLAGS_FOR_TARGET='-O2 -gdwarf-2 -gas-loc-support' \
 	CXXFLAGS_FOR_TARGET='-O2 -gdwarf-2 -gas-loc-support' \
-	ffmpeg sdl2_image freetype-bootstrap portaudio sqlite lua opencv opencvwrapper projectm
+	ffmpeg sdl2_image freetype-bootstrap portaudio sqlite lua opencv opencvwrapper projectm projectm-cwrapper
 mkdir -p $DLL_DIR
 OBJ_COPY="$MXE/usr/bin/$TARGET-objcopy"
 add_dll() {
@@ -67,7 +69,7 @@ for i in avcodec-61 avformat-61 avutil-59 swresample-5 swscale-8 libdav1d libjpe
 done
 
 # Add OpenCV and wrapper DLL(s) if present.
-for dll in "$MXE/usr/$TARGET/bin"/opencv_*.dll "$MXE/usr/$TARGET/bin"/libopencv_*.dll "$MXE/usr/$TARGET/bin"/opencvwrapper.dll "$MXE/usr/$TARGET/bin"/libprojectM*.dll; do
+for dll in "$MXE/usr/$TARGET/bin"/opencv_*.dll "$MXE/usr/$TARGET/bin"/libopencv_*.dll "$MXE/usr/$TARGET/bin"/opencvwrapper.dll "$MXE/usr/$TARGET/bin"/libprojectM*.dll "$MXE/usr/$TARGET/bin"/projectM-cwrapper.dll; do
 	base=$(basename "$dll" .dll)
 	add_dll "$dll" "$base"
 done

@@ -17,7 +17,7 @@ define $(PKG)_BUILD
         -L'$(PREFIX)/$(TARGET)/bin' -L'$(PREFIX)/$(TARGET)/lib' \
         -o projectM-cwrapper.dll \
         '$(TOP_DIR)/src/projectm-cwrapper/projectM-cwrapper.cpp' \
-        -l:libprojectM-0.dll
+        -l:libprojectM-0.dll -lopengl32
 
     $(INSTALL) -d '$(PREFIX)/$(TARGET)/bin'
     $(INSTALL) -m755 projectM-cwrapper.dll '$(PREFIX)/$(TARGET)/bin/'

@@ -20,10 +20,20 @@ define $(PKG)_BUILD
         --disable-ftgl
     $(MAKE) -C '$(1)' -j '$(JOBS)' install bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS=
 
+    # Upstream install omits internal headers required by projectM.hpp
+    # (event.h, fatal.h, config.h, etc.), but the USDX wrapper includes
+    # projectM.hpp directly. Install generated config.h and only header files.
+    $(INSTALL) -d '$(PREFIX)/$(TARGET)/include'
+    [ -f '$(1)/config.h' ] && $(INSTALL) -m644 '$(1)/config.h' '$(PREFIX)/$(TARGET)/include/config.h' || true
+    cd '$(1)/src/libprojectM' && find . -type f \( -name '*.h' -o -name '*.hpp' \) | while read -r f; do \
+        d=$$(dirname "$$f"); \
+        $(INSTALL) -d '$(PREFIX)/$(TARGET)/include/'"$$d"; \
+        $(INSTALL) -m644 "$$f" '$(PREFIX)/$(TARGET)/include/'"$$f"; \
+    done
+
     # Windows convention: DLLs in bin/, not in lib/.
     $(if $(BUILD_SHARED), \
-        mv -fv '$(PREFIX)/$(TARGET)/lib/'libprojectM*.dll '$(PREFIX)/$(TARGET)/bin/' 2>/dev/null || true; \
-        if [ -f '$(PREFIX)/$(TARGET)/bin/libprojectM-0.dll' ]; then \
-            mv -fv '$(PREFIX)/$(TARGET)/bin/libprojectM-0.dll' '$(PREFIX)/$(TARGET)/bin/libprojectM.dll'; \
-        fi)
+        mv -fv '$(PREFIX)/$(TARGET)/lib/'libprojectM*.dll '$(PREFIX)/$(TARGET)/bin/' 2>/dev/null || true, \
+				true
+			fi)
 endef
